@@ -3,12 +3,6 @@ from torch import nn
 from .ListModule import ListModule
 from torch.nn import functional as F
 
-
-class Swish(nn.Module):
-    def forward(self, x):
-        return x * F.sigmoid(x)
-
-
 class Autoencoder(nn.Module):
     def __init__(self, input_dim, encoding_dim, latent_dim):
         super(Autoencoder, self).__init__()

@@ -1,3 +1,4 @@
+from NetworksDataset import Ne
 from utils import *
 import numpy as np
 from models import MDA

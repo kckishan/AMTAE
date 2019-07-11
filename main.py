@@ -32,7 +32,7 @@ def main():
         F.append(Net.shape[1])
 
     tr_x_noisy, tr_x, ts_x_noisy, ts_x = split_data(Nets)
-    num_networks = len(string_nets)
+    num_networks = len(args.network_types)
     z_dim = [args.hidden_size] * num_networks
     latent_dim = args.hidden_size
     model = MDA(F, z_dim, latent_dim)
@@ -103,6 +103,7 @@ def main():
     with torch.no_grad():
         model.eval()
         features, _ = model(list_to_gpu(Nets, device))
+        Nets = Nets.cpu().detach()
         features = features.cpu().detach().numpy()
         features = minmax_scale(features)
 

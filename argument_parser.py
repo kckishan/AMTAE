@@ -20,7 +20,7 @@ def argument_parser():
     parser.add_argument("--label-names", nargs="+",
                         help="The level of Gene ontology as functional labels.")
     parser.add_argument("--network-types", nargs="+", help="The type of interaction networks.")
-    parser.add_argument("--epochs", type=int, default=2000,
+    parser.add_argument("--epochs", type=int, default=200,
                         help="Number of training epochs. Default is 200.")
     parser.add_argument("--early-stopping", type=int, default=5,
                         help="Number of early-stopping iterations. Default is 5.")

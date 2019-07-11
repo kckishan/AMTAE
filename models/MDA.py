@@ -55,7 +55,7 @@ class MDA(nn.Module):
                          for i in range(len(input_dims))]
         self.init_weight(self.decoders)
         self.decoders = ListModule(*self.decoders)
-        self.act = nn.ReLU()
+        self.act = nn.Sigmoid()
 
         self.init_weight(self.latent_layer)
         self.init_weight(self.rec_latent_layer)

@@ -20,17 +20,17 @@ def argument_parser():
     parser.add_argument("--label-names", nargs="+",
                         help="The level of Gene ontology as functional labels.")
     parser.add_argument("--network-types", nargs="+", help="The type of interaction networks.")
-    parser.add_argument("--epochs", type=int, default=200,
+    parser.add_argument("--epochs", type=int, default=2000,
                         help="Number of training epochs. Default is 200.")
-    parser.add_argument("--seed", type=int, default=42,
-                        help="Random seed for train-test split. Default is 42.")
-    parser.add_argument("--early-stopping", type=int, default=10,
-                        help="Number of early-stopping iterations. Default is 10.")
+    parser.add_argument("--early-stopping", type=int, default=5,
+                        help="Number of early-stopping iterations. Default is 5.")
     parser.add_argument("--testing_percentage", type=int, default=.2,
                         help="Percentage of training nodes. Default is 40%.")
     parser.add_argument("--dropout", type=float, default=0, help="Dropout rate. Default is 0.5.")
     parser.add_argument("--learning-rate", type=float, default=0.01,
-                        help="Learning rate. Default is 0.001.")
+                        help="Learning rate. Default is 0.01.")
+    parser.add_argument("--momentum", type=float, default=0.9,
+                        help="Momentum for SGD. Default is 0.9.")
     parser.add_argument("--batch-size", type=float, default=64,
                         help="Batch size. Default is 64.")
     parser.add_argument("--hidden-size", type=int, default=256,

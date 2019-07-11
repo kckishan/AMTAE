@@ -8,6 +8,8 @@ from tqdm import trange
 import pandas as pd
 from torch.utils.data import DataLoader
 from argument_parser import argument_parser
+import warnings
+warnings.filterwarnings("ignore")
 
 
 def main():
@@ -18,13 +20,11 @@ def main():
 
     num_nodes = pd.read_csv(args.data_folder + args.dataset + "/" +
                             args.dataset+"_string_genes.txt", header=None).shape[0]
-    string_nets = ['neighborhood', 'fusion', 'cooccurence',
-                   'coexpression', 'experimental', 'database']
 
     Nets = []
     F = []
-    for net in range(len(string_nets)):
-        print("Loading network for ", string_nets[net])
+    for net in range(len(args.network_types)):
+        print("Loading network for ", args.network_types[net])
         N = sio.loadmat(args.data_folder + args.dataset + "/" + args.annotations_path + args.dataset + '_net_' +
                         str(net+1) + '_K3_alpha0.98.mat')
         Net = N['Net'].todense()
@@ -46,7 +46,7 @@ def main():
 
     criterion = torch.nn.BCEWithLogitsLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate,
-                                weight_decay=0, nesterov=False)
+                                momentum=args.momentum, weight_decay=0, nesterov=False)
     epochs = trange(args.epochs, desc="Validation Loss")
     best_loss = np.Inf
     no_improvement = 0

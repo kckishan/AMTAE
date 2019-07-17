@@ -1,7 +1,6 @@
-from NetworksDataset import Ne
 from utils import *
 import numpy as np
-from models import MDA
+from models import MDA, kl_divergence
 import torch
 from scipy import io as sio
 from sklearn.preprocessing import minmax_scale
@@ -32,22 +31,29 @@ def main():
         Nets.append(minmax_scale(Net))
         F.append(Net.shape[1])
 
+    use_sparse = True
+    BETA = 0.5
     tr_x_noisy, tr_x, ts_x_noisy, ts_x = split_data(Nets)
     num_networks = len(args.network_types)
     z_dim = [args.hidden_size] * num_networks
-    latent_dim = args.hidden_size
+    latent_dim = args.latent_size
     model = MDA(F, z_dim, latent_dim)
     model.to(device)
     print(model)
+
+    def count_parameters(model):
+        return sum(p.numel() for p in model.parameters() if p.requires_grad)
+    print("Number of trainable parameters:", count_parameters(model)/1000000)
 
     train_dataset = NetworksDataset(tr_x_noisy, tr_x)
     test_dataset = NetworksDataset(ts_x_noisy, ts_x)
     trainloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
     testloader = DataLoader(test_dataset, batch_size=ts_x_noisy[0].shape[0])
-
-    criterion = torch.nn.BCEWithLogitsLoss()
+    RHO = 0.01
+    rho = torch.FloatTensor([RHO for _ in range(latent_dim)]).unsqueeze(0).to(device)
+    criterion = torch.nn.L1Loss()
     optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate,
-                                momentum=args.momentum, weight_decay=0, nesterov=False)
+                                momentum=args.momentum, weight_decay=1e-4, nesterov=True)
     epochs = trange(args.epochs, desc="Validation Loss")
     best_loss = np.Inf
     no_improvement = 0
@@ -59,13 +65,14 @@ def main():
             input_x = list_to_gpu(input_x, device)
             output_x = list_to_gpu(output_x, device)
             # ---------------forward------------------
-            z, out = model(input_x)
-            loss = 0
-            m_loss = []
-            for i in range(num_networks):
-                l = criterion(out[i], output_x[i])
-                loss += l
-                m_loss.append(l.item())
+            encoded, enc, dec, out = model(input_x)
+            rec_loss, m_loss = criterion_for_list(criterion, output_x, out)
+            if use_sparse:
+                rho_hat = torch.sum(encoded, dim=0, keepdim=True)
+                sparsity_penalty = BETA * kl_divergence(rho, rho_hat)
+                loss = rec_loss + sparsity_penalty
+            else:
+                loss = rec_loss
             # ---------------backward------------------
             optimizer.zero_grad()
             loss.backward()
@@ -78,13 +85,10 @@ def main():
                 test_input_x, test_output_x = test_X
                 test_input_x = list_to_gpu(test_input_x, device)
                 test_output_x = list_to_gpu(test_output_x, device)
-                _, val_out = model(test_input_x)
+                _, _, _, val_out = model(test_input_x)
 
-                val_loss = 0
-                for i in range(num_networks):
-                    val_l = criterion(val_out[i], test_output_x[i])
-                    val_loss += val_l.item()
-                total_val_loss.append(val_loss)
+                val_loss, _ = criterion_for_list(criterion, output_x, out)
+                total_val_loss.append(val_loss.item())
             epochs.set_description("Validation Loss: %g" % round(np.mean(total_val_loss), 4))
         if val_loss < best_loss:
             no_improvement = 0
@@ -100,11 +104,15 @@ def main():
     GO = sio.loadmat(args.data_folder + args.dataset + "/" +
                      args.annotations_path + args.dataset + '_annotations.mat')
 
+    input_x = list_to_cpu(input_x)
+    output_x = list_to_cpu(output_x)
+    test_input_x = list_to_cpu(test_input_x)
+    test_output_x = list_to_cpu(test_output_x)
+
     model.load_state_dict(torch.load('best_model.pkl'))
     with torch.no_grad():
         model.eval()
-        features, _ = model(list_to_gpu(Nets, device))
-        Nets = Nets.cpu().detach()
+        features, _, _, _ = model(list_to_gpu(Nets, device))
         features = features.cpu().detach().numpy()
         features = minmax_scale(features)
 

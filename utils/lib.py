@@ -173,3 +173,33 @@ def list_to_gpu(X, device):
             return torch.from_numpy(X).type(torch.FloatTensor).to(device)
         else:
             return X.type(torch.FloatTensor).to(device)
+
+
+def list_to_cpu(X):
+    """
+    Transfer the data to CPU
+
+    Parameters
+    ----------
+    X : list or array
+        The dataset to load
+    Returns
+    -------
+    X: list or array
+        The dataset on CPU
+    """
+    if isinstance(X, list):
+        return [X[i].cpu().detach() for i in range(len(X))]
+    else:
+        return X.cpu().detach()
+
+
+def criterion_for_list(criterion, target, output):
+    loss = 0
+    # loss += criterion(enc, dec)
+    m_loss = []
+    for i in range(len(output)):
+        l = criterion(output[i], target[i])
+        loss += l
+        m_loss.append(l.item())
+    return loss, m_loss

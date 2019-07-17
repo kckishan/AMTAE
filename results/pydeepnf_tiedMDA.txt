@@ -1,0 +1,205 @@
++--------------------+---------------------------------------------------------+
+|     Parameter      |                          Value                          |
++====================+=========================================================+
+| Annotations path   | annotations/                                            |
++--------------------+---------------------------------------------------------+
+| Batch size         | 64                                                      |
++--------------------+---------------------------------------------------------+
+| Data folder        | ./data/                                                 |
++--------------------+---------------------------------------------------------+
+| Dataset            | yeast                                                   |
++--------------------+---------------------------------------------------------+
+| Dropout            | 0                                                       |
++--------------------+---------------------------------------------------------+
+| Early stopping     | 5                                                       |
++--------------------+---------------------------------------------------------+
+| Epochs             | 2                                                       |
++--------------------+---------------------------------------------------------+
+| Hidden size        | 800                                                     |
++--------------------+---------------------------------------------------------+
+| Label names        | ['level1', 'level2', 'level3']                          |
++--------------------+---------------------------------------------------------+
+| Latent size        | 500                                                     |
++--------------------+---------------------------------------------------------+
+| Learning rate      | 0.010                                                   |
++--------------------+---------------------------------------------------------+
+| Momentum           | 0.900                                                   |
++--------------------+---------------------------------------------------------+
+| Network types      | ['neighborhood', 'fusion', 'cooccurence',               |
+|                    | 'coexpression', 'experimental', 'database']             |
++--------------------+---------------------------------------------------------+
+| Testing percentage | 0.200                                                   |
++--------------------+---------------------------------------------------------+
+Loading network for  neighborhood
+Loading network for  fusion
+Loading network for  cooccurence
+Loading network for  coexpression
+Loading network for  experimental
+Loading network for  database
+MDA(
+  (encoders): ListModule(
+    (0): Linear(in_features=6400, out_features=800, bias=True)
+    (1): Linear(in_features=6400, out_features=800, bias=True)
+    (2): Linear(in_features=6400, out_features=800, bias=True)
+    (3): Linear(in_features=6400, out_features=800, bias=True)
+    (4): Linear(in_features=6400, out_features=800, bias=True)
+    (5): Linear(in_features=6400, out_features=800, bias=True)
+  )
+  (latent_layer): Linear(in_features=4800, out_features=500, bias=True)
+  (act): Sigmoid()
+)
+Number of trainable parameters: 33.1253
+### Running for level: level1
+### Pregenerating kernels...
+### Done.
+### [Trial 1] Perfom cross validation....
+Train samples=3554; #Test samples=889
+### gamma = 0.001, C = 0.100, AUPR = 0.611
+### gamma = 0.010, C = 0.100, AUPR = 0.618
+### gamma = 0.100, C = 0.100, AUPR = 0.649
+### gamma = 1.000, C = 0.100, AUPR = 0.462
+### gamma = 0.001, C = 1.000, AUPR = 0.613
+### gamma = 0.010, C = 1.000, AUPR = 0.634
+### gamma = 0.100, C = 1.000, AUPR = 0.689
+### gamma = 1.000, C = 1.000, AUPR = 0.462
+### gamma = 0.001, C = 10.000, AUPR = 0.630
+### gamma = 0.010, C = 10.000, AUPR = 0.658
+### gamma = 0.100, C = 10.000, AUPR = 0.689
+### gamma = 1.000, C = 10.000, AUPR = 0.472
+### gamma = 0.001, C = 100.000, AUPR = 0.645
+### gamma = 0.010, C = 100.000, AUPR = 0.636
+### gamma = 0.100, C = 100.000, AUPR = 0.689
+### gamma = 1.000, C = 100.000, AUPR = 0.472
+### Optimal parameters: 
+C_opt = 100.000, gamma_opt = 0.100
+### Train dataset: AUPR = 0.689
+### Using full training data...
+### Test dataset: AUPR['micro'] = 0.723, AUPR['macro'] = 0.599, F1 = 0.588, Acc = 0.285
+### [Trial 2] Perfom cross validation....
+Train samples=3554; #Test samples=889
+### gamma = 0.001, C = 0.100, AUPR = 0.608
+### gamma = 0.010, C = 0.100, AUPR = 0.616
+### gamma = 0.100, C = 0.100, AUPR = 0.650
+### gamma = 1.000, C = 0.100, AUPR = 0.462
+### gamma = 0.001, C = 1.000, AUPR = 0.610
+### gamma = 0.010, C = 1.000, AUPR = 0.638
+### gamma = 0.100, C = 1.000, AUPR = 0.694
+### gamma = 1.000, C = 1.000, AUPR = 0.463
+### gamma = 0.001, C = 10.000, AUPR = 0.633
+### gamma = 0.010, C = 10.000, AUPR = 0.668
+### gamma = 0.100, C = 10.000, AUPR = 0.697
+### gamma = 1.000, C = 10.000, AUPR = 0.474
+### gamma = 0.001, C = 100.000, AUPR = 0.653
+### gamma = 0.010, C = 100.000, AUPR = 0.635
+### gamma = 0.100, C = 100.000, AUPR = 0.697
+### gamma = 1.000, C = 100.000, AUPR = 0.474
+### Optimal parameters: 
+C_opt = 10.000, gamma_opt = 0.100
+### Train dataset: AUPR = 0.697
+### Using full training data...
+### Test dataset: AUPR['micro'] = 0.706, AUPR['macro'] = 0.569, F1 = 0.574, Acc = 0.300
+### [Trial 3] Perfom cross validation....
+Train samples=3554; #Test samples=889
+### gamma = 0.001, C = 0.100, AUPR = 0.614
+### gamma = 0.010, C = 0.100, AUPR = 0.622
+### gamma = 0.100, C = 0.100, AUPR = 0.653
+### gamma = 1.000, C = 0.100, AUPR = 0.459
+### gamma = 0.001, C = 1.000, AUPR = 0.615
+### gamma = 0.010, C = 1.000, AUPR = 0.644
+### gamma = 0.100, C = 1.000, AUPR = 0.691
+### gamma = 1.000, C = 1.000, AUPR = 0.459
+### gamma = 0.001, C = 10.000, AUPR = 0.639
+### gamma = 0.010, C = 10.000, AUPR = 0.667
+### gamma = 0.100, C = 10.000, AUPR = 0.694
+### gamma = 1.000, C = 10.000, AUPR = 0.472
+### gamma = 0.001, C = 100.000, AUPR = 0.652
+### gamma = 0.010, C = 100.000, AUPR = 0.632
+### gamma = 0.100, C = 100.000, AUPR = 0.694
+### gamma = 1.000, C = 100.000, AUPR = 0.472
+### Optimal parameters: 
+C_opt = 100.000, gamma_opt = 0.100
+### Train dataset: AUPR = 0.694
+### Using full training data...
+### Test dataset: AUPR['micro'] = 0.713, AUPR['macro'] = 0.574, F1 = 0.582, Acc = 0.316
+### [Trial 4] Perfom cross validation....
+Train samples=3554; #Test samples=889
+### gamma = 0.001, C = 0.100, AUPR = 0.613
+### gamma = 0.010, C = 0.100, AUPR = 0.620
+### gamma = 0.100, C = 0.100, AUPR = 0.649
+### gamma = 1.000, C = 0.100, AUPR = 0.481
+### gamma = 0.001, C = 1.000, AUPR = 0.615
+### gamma = 0.010, C = 1.000, AUPR = 0.639
+### gamma = 0.100, C = 1.000, AUPR = 0.696
+### gamma = 1.000, C = 1.000, AUPR = 0.481
+### gamma = 0.001, C = 10.000, AUPR = 0.635
+### gamma = 0.010, C = 10.000, AUPR = 0.666
+### gamma = 0.100, C = 10.000, AUPR = 0.706
+### gamma = 1.000, C = 10.000, AUPR = 0.490
+### gamma = 0.001, C = 100.000, AUPR = 0.652
+### gamma = 0.010, C = 100.000, AUPR = 0.645
+### gamma = 0.100, C = 100.000, AUPR = 0.705
+### gamma = 1.000, C = 100.000, AUPR = 0.490
+### Optimal parameters: 
+C_opt = 10.000, gamma_opt = 0.100
+### Train dataset: AUPR = 0.706
+### Using full training data...
+### Test dataset: AUPR['micro'] = 0.686, AUPR['macro'] = 0.560, F1 = 0.561, Acc = 0.255
+### [Trial 5] Perfom cross validation....
+Train samples=3554; #Test samples=889
+### gamma = 0.001, C = 0.100, AUPR = 0.609
+### gamma = 0.010, C = 0.100, AUPR = 0.616
+### gamma = 0.100, C = 0.100, AUPR = 0.652
+### gamma = 1.000, C = 0.100, AUPR = 0.452
+### gamma = 0.001, C = 1.000, AUPR = 0.610
+### gamma = 0.010, C = 1.000, AUPR = 0.640
+### gamma = 0.100, C = 1.000, AUPR = 0.695
+### gamma = 1.000, C = 1.000, AUPR = 0.453
+### gamma = 0.001, C = 10.000, AUPR = 0.635
+### gamma = 0.010, C = 10.000, AUPR = 0.663
+### gamma = 0.100, C = 10.000, AUPR = 0.692
+### gamma = 1.000, C = 10.000, AUPR = 0.461
+### gamma = 0.001, C = 100.000, AUPR = 0.649
+### gamma = 0.010, C = 100.000, AUPR = 0.628
+### gamma = 0.100, C = 100.000, AUPR = 0.692
+### gamma = 1.000, C = 100.000, AUPR = 0.461
+### Optimal parameters: 
+C_opt = 1.000, gamma_opt = 0.100
+### Train dataset: AUPR = 0.695
+### Using full training data...
+### Test dataset: AUPR['micro'] = 0.705, AUPR['macro'] = 0.584, F1 = 0.578, Acc = 0.263
+### [Trial 6] Perfom cross validation....
+Train samples=3554; #Test samples=889
+### gamma = 0.001, C = 0.100, AUPR = 0.614
+### gamma = 0.010, C = 0.100, AUPR = 0.623
+### gamma = 0.100, C = 0.100, AUPR = 0.658
+### gamma = 1.000, C = 0.100, AUPR = 0.471
+### gamma = 0.001, C = 1.000, AUPR = 0.618
+### gamma = 0.010, C = 1.000, AUPR = 0.646
+### gamma = 0.100, C = 1.000, AUPR = 0.698
+### gamma = 1.000, C = 1.000, AUPR = 0.472
+### gamma = 0.001, C = 10.000, AUPR = 0.641
+### gamma = 0.010, C = 10.000, AUPR = 0.671
+### gamma = 0.100, C = 10.000, AUPR = 0.709
+### gamma = 1.000, C = 10.000, AUPR = 0.483
+### gamma = 0.001, C = 100.000, AUPR = 0.657
+### gamma = 0.010, C = 100.000, AUPR = 0.648
+### gamma = 0.100, C = 100.000, AUPR = 0.709
+### gamma = 1.000, C = 100.000, AUPR = 0.483
+### Optimal parameters: 
+C_opt = 10.000, gamma_opt = 0.100
+### Train dataset: AUPR = 0.709
+### Using full training data...
+### Test dataset: AUPR['micro'] = 0.699, AUPR['macro'] = 0.545, F1 = 0.560, Acc = 0.299
+### [Trial 7] Perfom cross validation....
+Train samples=3554; #Test samples=889
+### gamma = 0.001, C = 0.100, AUPR = 0.602
+### gamma = 0.010, C = 0.100, AUPR = 0.612
+### gamma = 0.100, C = 0.100, AUPR = 0.653
+### gamma = 1.000, C = 0.100, AUPR = 0.456
+### gamma = 0.001, C = 1.000, AUPR = 0.607
+### gamma = 0.010, C = 1.000, AUPR = 0.640
+### gamma = 0.100, C = 1.000, AUPR = 0.695
+### gamma = 1.000, C = 1.000, AUPR = 0.457
+### gamma = 0.001, C = 10.000, AUPR = 0.635
+### gamma = 0.010, C = 10.000, AUPR = 0.666
+### gamma = 0.100, C = 10.000, AUPR = 0.694

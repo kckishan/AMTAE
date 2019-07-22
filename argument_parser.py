@@ -16,27 +16,31 @@ def argument_parser():
     parser.add_argument("--dataset", nargs="?", default="yeast",
                         help="The name of the dataset. Default is yeast.")
     parser.add_argument("--annotations-path", nargs="?", default="annotations/",
-                        help="folder that contains classes.")
+                        help="folder that contains annotations.")
+    parser.add_argument("--networks-path", nargs="?", default="networks/",
+                        help="folder that contains adjacency lists.")
     parser.add_argument("--label-names", nargs="+",
                         help="The level of Gene ontology as functional labels.")
     parser.add_argument("--network-types", nargs="+", help="The type of interaction networks.")
-    parser.add_argument("--epochs", type=int, default=500,
-                        help="Number of training epochs. Default is 50.")
+    parser.add_argument("--epochs", type=int, default=80,
+                        help="Number of training epochs. Default is 20.")
     parser.add_argument("--early-stopping", type=int, default=5,
                         help="Number of early-stopping iterations. Default is 5.")
-    parser.add_argument("--testing_percentage", type=int, default=.5,
-                        help="Percentage of training nodes. Default is 40%.")
+    parser.add_argument("--testing_percentage", type=int, default=.2,
+                        help="Percentage of training nodes. Default is 20%.")
     parser.add_argument("--dropout", type=float, default=0, help="Dropout rate. Default is 0.5.")
-    parser.add_argument("--learning-rate", type=float, default=0.01,
+    parser.add_argument("--learning-rate", type=float, default=1e-4,
                         help="Learning rate. Default is 0.01.")
     parser.add_argument("--momentum", type=float, default=0.9,
                         help="Momentum for SGD. Default is 0.9.")
     parser.add_argument("--batch-size", type=float, default=32,
-                        help="Batch size. Default is 64.")
-    parser.add_argument("--hidden-size", type=int, default=256,
-                        help="Dimension of latent representation. Default is 256.")
-    parser.add_argument("--latent-size", type=int, default=256,
-                        help="Dimension of latent representation. Default is 128.")
+                        help="Batch size. Default is 32.")
+    parser.add_argument("--hidden-size", type=int, default=32,
+                        help="Dimension of hidden representation. Default is 32.")
+    parser.add_argument("--latent-size", type=int, default=32,
+                        help="Dimension of latent representation. Default is 32.")
+    parser.add_argument("--beta", type=float, default=0.5,
+                        help="Weight of attention loss")
     parser.set_defaults(network_types=['neighborhood', 'fusion',
                                        'cooccurence', 'coexpression', 'experimental', 'database'])
     parser.set_defaults(label_names=['level1', 'level2', 'level3'])

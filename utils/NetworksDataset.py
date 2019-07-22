@@ -22,4 +22,4 @@ class NetworksDataset(Dataset):
         else:
             x = self.input_networks[indx]
             y = self.output_networks[indx]
-        return x, y
+        return x, y, indx

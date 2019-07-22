@@ -1,6 +1,6 @@
 from utils import *
 import numpy as np
-from models import MDA, kl_divergence
+from models import MDA
 import torch
 from scipy import io as sio
 from sklearn.preprocessing import minmax_scale
@@ -30,30 +30,37 @@ def main():
         Net = N['Net'].todense()
         Nets.append(minmax_scale(Net))
         F.append(Net.shape[1])
+    #
+    path_to_string_nets = args.data_folder + args.dataset + "/" + args.networks_path
+    A = load_networks(path_to_string_nets, num_nodes, mtrx='adj')
 
-    use_sparse = True
-    BETA = 0.5
     tr_x_noisy, tr_x, ts_x_noisy, ts_x = split_data(Nets)
     num_networks = len(args.network_types)
     z_dim = [args.hidden_size] * num_networks
     latent_dim = args.latent_size
     model = MDA(F, z_dim, latent_dim)
     model.to(device)
+
+    fout = open('./results/output_'+args.dataset+'_'+str(args.hidden_size) +
+                '_'+str(args.latent_size)+'_'+'.txt', 'w+')
+    fout.write('### %s\n' % (args.dataset))
+    fout.write('\n')
     print(model)
 
     def count_parameters(model):
-        return sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print("Number of trainable parameters:", count_parameters(model)/1000000)
+        return sum(p.numel() for p in model.parameters() if p.requires_grad)/10**6
+    print("Number of trainable parameters: %0.2f millions" % count_parameters(model))
+    fout.write("Number of trainable parameters: %0.2f millions" % (count_parameters(model)))
+    fout.write('\n')
 
     train_dataset = NetworksDataset(tr_x_noisy, tr_x)
     test_dataset = NetworksDataset(ts_x_noisy, ts_x)
     trainloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
     testloader = DataLoader(test_dataset, batch_size=ts_x_noisy[0].shape[0])
-    RHO = 0.01
-    rho = torch.FloatTensor([RHO for _ in range(latent_dim)]).unsqueeze(0).to(device)
     criterion = torch.nn.L1Loss()
+
     optimizer = torch.optim.SGD(model.parameters(), lr=args.learning_rate,
-                                momentum=args.momentum, weight_decay=1e-4, nesterov=True)
+                                momentum=args.momentum, nesterov=False)
     epochs = trange(args.epochs, desc="Validation Loss")
     best_loss = np.Inf
     no_improvement = 0
@@ -61,18 +68,16 @@ def main():
     for epoch in epochs:
         model.train()
         for i, X in enumerate(trainloader):
-            input_x, output_x = X
+            input_x, output_x, ind = X
             input_x = list_to_gpu(input_x, device)
             output_x = list_to_gpu(output_x, device)
             # ---------------forward------------------
-            encoded, enc, dec, out = model(input_x)
-            rec_loss, m_loss = criterion_for_list(criterion, output_x, out)
-            if use_sparse:
-                rho_hat = torch.sum(encoded, dim=0, keepdim=True)
-                sparsity_penalty = BETA * kl_divergence(rho, rho_hat)
-                loss = rec_loss + sparsity_penalty
-            else:
-                loss = rec_loss
+            z, enc, enc_rec, out, attn = model(input_x)
+            deg = A[ind].to(device)
+            # print(attn.shape, deg.shape)
+            rec_loss = criterion_for_list(criterion, output_x, out)
+            attn_loss = criterion(attn, deg)
+            loss = rec_loss + args.beta * attn_loss
             # ---------------backward------------------
             optimizer.zero_grad()
             loss.backward()
@@ -82,12 +87,16 @@ def main():
             model.eval()
             total_val_loss = []
             for i, test_X in enumerate(testloader):
-                test_input_x, test_output_x = test_X
+                test_input_x, test_output_x, test_ind = test_X
                 test_input_x = list_to_gpu(test_input_x, device)
                 test_output_x = list_to_gpu(test_output_x, device)
-                _, _, _, val_out = model(test_input_x)
+                _, _, _, val_out, test_attn = model(test_input_x)
 
-                val_loss, _ = criterion_for_list(criterion, output_x, out)
+                test_deg = A[test_ind].to(device)
+                val_rec_loss = criterion_for_list(criterion, output_x, out)
+                val_attn_loss = criterion(test_attn, test_deg)
+
+                val_loss = val_rec_loss + args.beta * val_attn_loss
                 total_val_loss.append(val_loss.item())
             epochs.set_description("Validation Loss: %g" % round(np.mean(total_val_loss), 4))
         if val_loss < best_loss:
@@ -112,7 +121,7 @@ def main():
     model.load_state_dict(torch.load('best_model.pkl'))
     with torch.no_grad():
         model.eval()
-        features, _, _, _ = model(list_to_gpu(Nets, device))
+        features, _, _, _, _ = model(list_to_gpu(Nets, device))
         features = features.cpu().detach().numpy()
         features = minmax_scale(features)
 
@@ -121,10 +130,13 @@ def main():
         perf = cross_validation(features, GO[level],
                                 n_trials=10)
         avg_micro = 0.0
+        fout.write('### %s trials:\n' % (level))
+        fout.write('aupr[micro], aupr[macro], F_max, accuracy\n')
         for ii in range(0, len(perf['fmax'])):
-            print('%0.5f %0.5f %0.5f %0.5f\n' %
-                  (perf['pr_micro'][ii], perf['pr_macro'][ii], perf['fmax'][ii], perf['acc'][ii]))
+            fout.write('%0.5f %0.5f %0.5f %0.5f\n' % (
+                perf['pr_micro'][ii], perf['pr_macro'][ii], perf['fmax'][ii], perf['acc'][ii]))
             avg_micro += perf['pr_micro'][ii]
+        fout.write('\n')
         avg_micro /= len(perf['fmax'])
         print("### Average (over trials): m-AUPR = %0.3f" % (avg_micro))
 

@@ -18,6 +18,7 @@ def table_printer(args):
     args = vars(args)
     keys = sorted(args.keys())
     table = Texttable()
+    table.set_precision(4)
     table.add_rows([["Parameter", "Value"]] +
                    [[k.replace("_", " ").capitalize(), args[k]] for k in keys])
     print(table.draw())
@@ -67,13 +68,13 @@ def load_network(filename, num_nodes, mtrx='adj'):
     return A
 
 
-def load_networks(filenames, mtrx='adj'):
+def load_networks(path_to_string_nets, num_nodes, mtrx='adj'):
     """
     Load networks from adjacency lists
     Parameters
     ----------
-    filenames : list of strings
-        filenames of the adjacency list of multiple networks
+    path_to_string_nets : path
+
     mtrx : strings
         Type of the matrix (the default is 'adj').
 
@@ -84,10 +85,20 @@ def load_networks(filenames, mtrx='adj'):
 
     """
     Nets = []
-    for filename in filenames:
-        Nets.append(load_network(filename, mtrx))
 
-    return Nets
+    string_nets = ['neighborhood', 'fusion', 'cooccurence',
+                   'coexpression', 'experimental', 'database']
+    for net in string_nets:
+        filename = path_to_string_nets + 'yeast_string_' + net + '_adjacency.txt'
+        Net = load_network(filename, num_nodes, mtrx)
+        # print(np.count_nonzero(Net))
+        Net = Net + np.diag(np.diag(Net))
+        Nets.append(torch.from_numpy(Net))
+    adjs = torch.stack(Nets, dim=2)
+    A = torch.sum(adjs, dim=1)
+    A = A/A.max(dim=1, keepdim=True)[0]
+    A[torch.isnan(A)] = 0
+    return A
 
 
 def split_data(X, test_size=0.2, noise_factor=0.5, std=1.0):
@@ -196,10 +207,7 @@ def list_to_cpu(X):
 
 def criterion_for_list(criterion, target, output):
     loss = 0
-    # loss += criterion(enc, dec)
-    m_loss = []
     for i in range(len(output)):
         l = criterion(output[i], target[i])
         loss += l
-        m_loss.append(l.item())
-    return loss, m_loss
+    return loss

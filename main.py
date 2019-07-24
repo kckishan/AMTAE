@@ -16,7 +16,7 @@ def main():
 
     args = argument_parser()
     table_printer(args)
-    device = torch.device("cuda:0" if torch.cuda.is_available else "cpu")
+    device = torch.device("cpu")
 
     num_nodes = pd.read_csv(args.data_folder + args.dataset + "/" +
                             args.dataset+"_string_genes.txt", header=None).shape[0]
@@ -40,7 +40,7 @@ def main():
     latent_dim = args.latent_size
     model = MDA(F, z_dim, latent_dim)
     model.to(device)
-
+    model_name = "model_"+str(args.hidden_size)+'_'+str(args.latent_size)+'.pkl'
     fout = open('./results/output_'+args.dataset+'_'+str(args.hidden_size) +
                 '_'+str(args.latent_size)+'_'+'.txt', 'w+')
     fout.write('### %s\n' % (args.dataset))
@@ -113,18 +113,23 @@ def main():
     GO = sio.loadmat(args.data_folder + args.dataset + "/" +
                      args.annotations_path + args.dataset + '_annotations.mat')
 
-    input_x = list_to_cpu(input_x)
-    output_x = list_to_cpu(output_x)
-    test_input_x = list_to_cpu(test_input_x)
-    test_output_x = list_to_cpu(test_output_x)
+    # input_x = list_to_cpu(input_x)
+    # output_x = list_to_cpu(output_x)
+    # test_input_x = list_to_cpu(test_input_x)
+    # test_output_x = list_to_cpu(test_output_x)
 
     model.load_state_dict(torch.load('best_model.pkl'))
     with torch.no_grad():
         model.eval()
-        features, _, _, _, _ = model(list_to_gpu(Nets, device))
-        features = features.cpu().detach().numpy()
+        features, _, _, _, attn_weights = model(list_to_gpu(Nets, device))
+        if torch.cuda.is_available():
+            features = features.cpu()
+        features = features.detach().numpy()
         features = minmax_scale(features)
 
+        if torch.cuda.is_available():
+            attn_weights = attn_weights.cpu()
+        np.savetxt("results/attn_weights.txt", attn_weights.detach().numpy())
     for level in args.label_names:
         print("### Running for level: %s" % (level))
         perf = cross_validation(features, GO[level],

@@ -92,7 +92,7 @@ def load_networks(path_to_string_nets, num_nodes, mtrx='adj'):
         filename = path_to_string_nets + 'yeast_string_' + net + '_adjacency.txt'
         Net = load_network(filename, num_nodes, mtrx)
         # print(np.count_nonzero(Net))
-        Net = Net + np.diag(np.diag(Net))
+        np.fill_diagonal(Net, 1)
         Nets.append(torch.from_numpy(Net))
     adjs = torch.stack(Nets, dim=2)
     A = torch.sum(adjs, dim=1)

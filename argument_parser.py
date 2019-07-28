@@ -22,6 +22,8 @@ def argument_parser():
     parser.add_argument("--label-names", nargs="+",
                         help="The level of Gene ontology as functional labels.")
     parser.add_argument("--network-types", nargs="+", help="The type of interaction networks.")
+    parser.add_argument("--attn-type", type=str, default='sparsemax',
+                        help="Attention type to combine different networks")
     parser.add_argument("--epochs", type=int, default=20,
                         help="Number of training epochs. Default is 20.")
     parser.add_argument("--early-stopping", type=int, default=5,
@@ -39,8 +41,9 @@ def argument_parser():
                         help="Dimension of hidden representation. Default is 32.")
     parser.add_argument("--latent-size", type=int, default=600,
                         help="Dimension of latent representation. Default is 32.")
-    parser.add_argument("--beta", type=float, default=0.5,
+    parser.add_argument("--beta", type=float, default=0.3,
                         help="Weight of attention loss")
+    parser.add_argument('--use-cuda', action='store_true', help="Use CPU only")
     parser.set_defaults(network_types=['neighborhood', 'fusion',
                                        'cooccurence', 'coexpression', 'experimental', 'database'])
     parser.set_defaults(label_names=['level1', 'level2', 'level3'])

@@ -16,8 +16,8 @@ def main():
 
     args = argument_parser()
     table_printer(args)
-    device = torch.device("cpu")
-
+    device = torch.device("cuda:0" if torch.cuda.is_available() and args.use_cuda else "cpu")
+    print("Training in ", device)
     num_nodes = pd.read_csv(args.data_folder + args.dataset + "/" +
                             args.dataset+"_string_genes.txt", header=None).shape[0]
 
@@ -32,16 +32,16 @@ def main():
         F.append(Net.shape[1])
     #
     path_to_string_nets = args.data_folder + args.dataset + "/" + args.networks_path
-    A = load_networks(path_to_string_nets, num_nodes, mtrx='adj')
-
+    Adjs, A = load_networks(path_to_string_nets, num_nodes, mtrx='adj')
+    Nets = Adjs
     tr_x_noisy, tr_x, ts_x_noisy, ts_x = split_data(Nets)
     num_networks = len(args.network_types)
     z_dim = [args.hidden_size] * num_networks
     latent_dim = args.latent_size
-    model = MDA(F, z_dim, latent_dim)
+    model = MDA(F, z_dim, latent_dim, args)
     model.to(device)
-    model_name = "model_"+str(args.hidden_size)+'_'+str(args.latent_size)+'.pkl'
-    fout = open('./results/output_'+args.dataset+'_'+str(args.hidden_size) +
+    model_name = "model_"+args.attn_type+"_"+str(args.hidden_size)+'_'+str(args.latent_size)+'.pkl'
+    fout = open('./results/output_'+args.attn_type+"_"+args.dataset+'_'+str(args.hidden_size) +
                 '_'+str(args.latent_size)+'_'+'.txt', 'w+')
     fout.write('### %s\n' % (args.dataset))
     fout.write('\n')

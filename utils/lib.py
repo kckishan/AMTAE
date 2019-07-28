@@ -85,7 +85,7 @@ def load_networks(path_to_string_nets, num_nodes, mtrx='adj'):
 
     """
     Nets = []
-
+    adj_mat = []
     string_nets = ['neighborhood', 'fusion', 'cooccurence',
                    'coexpression', 'experimental', 'database']
     for net in string_nets:
@@ -93,12 +93,13 @@ def load_networks(path_to_string_nets, num_nodes, mtrx='adj'):
         Net = load_network(filename, num_nodes, mtrx)
         # print(np.count_nonzero(Net))
         np.fill_diagonal(Net, 1)
+        adj_mat.append(Net)
         Nets.append(torch.from_numpy(Net))
     adjs = torch.stack(Nets, dim=2)
     A = torch.sum(adjs, dim=1)
     A = A/A.max(dim=1, keepdim=True)[0]
     A[torch.isnan(A)] = 0
-    return A
+    return adj_mat, A
 
 
 def split_data(X, test_size=0.2, noise_factor=0.5, std=1.0):

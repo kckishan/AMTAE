@@ -2,19 +2,22 @@ import torch
 from torch import nn
 from .ListModule import ListModule
 from torch.nn import functional as F
+from .sparsemax import Sparsemax
 
 
 class Attention(nn.Module):
 
-    def __init__(self, att_size):
+    def __init__(self, att_size, args):
         super(Attention, self).__init__()
-        self.softmax = nn.Softmax(dim=1)
+        self.args = args
+        self.attention_layer = Sparsemax(
+            dim=1) if args.attn_type == 'sparsemax' else nn.Softmax(dim=1)
         self.att_w = nn.Conv1d(att_size, 1, 1)
         nn.init.xavier_uniform_(self.att_w.weight)
 
     def forward(self, input):
         att = self.att_w(input.permute(0, 2, 1)).squeeze(1)
-        out = self.softmax(att).unsqueeze(2)
+        out = self.attention_layer(att, self.args.use_cuda).unsqueeze(2)
         return out
 
 
@@ -40,7 +43,7 @@ class Autoencoder(nn.Module):
 
 
 class MDA_Layer(nn.Module):
-    def __init__(self, input_dims, encoding_dims):
+    def __init__(self, input_dims, encoding_dims, args):
         super(MDA_Layer, self).__init__()
 
         self.input_dims = input_dims
@@ -50,7 +53,7 @@ class MDA_Layer(nn.Module):
                          for i in range(len(input_dims))]
         self.init_weight(self.encoders)
         self.encoders = ListModule(*self.encoders)
-        self.attention = Attention(encoding_dims[0])
+        self.attention = Attention(encoding_dims[0], args)
         self.act = nn.Sigmoid()
         self.dropout = nn.Dropout(0.1)
         self.lin = nn.Linear(encoding_dims[0], encoding_dims[0], bias=False)
@@ -78,14 +81,14 @@ class MDA_Layer(nn.Module):
 
 
 class MDA(nn.Module):
-    def __init__(self, input_dims, encoding_dims, latent_dim):
+    def __init__(self, input_dims, encoding_dims, latent_dim, args):
         super(MDA, self).__init__()
 
         self.input_dims = input_dims
         self.encoding_dims = encoding_dims
         self.abstract_layer_size = encoding_dims[0]
         self.latent_dim = latent_dim
-        self.encoders = MDA_Layer(input_dims, encoding_dims)
+        self.encoders = MDA_Layer(input_dims, encoding_dims, args)
         self.latent_layer = nn.Linear(self.abstract_layer_size, self.latent_dim, bias=False)
         self.act = nn.Sigmoid()
         self.dropout = nn.Dropout(0.1)

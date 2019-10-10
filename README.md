@@ -5,7 +5,7 @@ A PyTorch implementation of Multimodal Tied Autoencoder.
 ### Abstract
 
 <p align="justify">
-Recent methdos such as deepnf use multimodal autoencoder to learn the represenation for each proteins. The state-of-the-art method have hundreds of millions of parameters to integrate multiple networks. In this project, we propose a multimodal tied autoencoders that constrain the decoder to share parameters with encoders. 
+A recent method (deepnf) uses a multimodal autoencoder to learn the representation for each protein. The state-of-the-art method has hundreds of millions of parameters to integrate multiple networks. In this project, we propose a multimodal tied autoencoder that constrains the decoder to share parameters with encoders. 
 </p>
 
 ### Requirements
@@ -21,8 +21,8 @@ torch             0.4.1
 ```
 ### Datasets
 - The interaction networks of Yeast and Human are collected from the STRING database v9.1.
-- The functional labels for yeast are obtained from Munich Information Center for Protein Sequences (MIPS). The functional categories in MIPS are organized in a three-layered hierarchy.
-- The functional labels for human are obtained from Gene Ontology database. The GO terms for human are grouped to obtain three distinct levels of functional categories for different specificities.
+- The functional labels for yeast are obtained from the Munich Information Center for Protein Sequences (MIPS). The functional categories in MIPS are organized in a three-layered hierarchy.
+- The functional labels for humans are obtained from the Gene Ontology database. The GO terms for humans are grouped to obtain three distinct levels of functional categories for different specificities.
 
 
 #### Preprocessing
@@ -60,7 +60,7 @@ X = PPMI(RWR(A))
 |  | 101-300 | 28  | 20 | 18|
 
 ### Options
-Training the model is handled by the `main.py` script which provides the following command line arguments.
+Training the model is handled by the `main.py` script which provides the following command-line arguments.
 
 #### Input and output options
 ```
@@ -90,11 +90,11 @@ python main.py
 ```
 
 
-Training a model for a 100 epochs.
+Training a model for 100 epochs.
 ```
 python main.py --epochs 100
 ```
-Increasing the learning rate and the dropout.
+Increasing the learning rate and dropout.
 ```
 python main.py --learning-rate 0.1 --dropout 0.9
 ```
@@ -102,7 +102,7 @@ Training a model with latent-size 64:
 ```
 python main.py --latent-size 64 
 ```
-Training with cuda:
+Training with Cuda:
 ```
 python main.py --use-cuda
 ```
@@ -116,7 +116,7 @@ The comparison of the model's performance with the SOTA method.
 |  DeepNF | 312 millions |
 | TiedDeepNF | 82 millions |
 
-Our model shows similar performance with 230 millions less parameters.
+Our model shows a similar performance with 230 million fewer parameters.
 
 <p align="center">
   <img width="800" src="plots/comaprison.jpg">

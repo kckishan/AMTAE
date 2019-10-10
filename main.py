@@ -33,7 +33,7 @@ def main():
     #
     path_to_string_nets = args.data_folder + args.dataset + "/" + args.networks_path
     Adjs, A = load_networks(path_to_string_nets, num_nodes, mtrx='adj')
-    Nets = Adjs
+
     tr_x_noisy, tr_x, ts_x_noisy, ts_x = split_data(Nets)
     num_networks = len(args.network_types)
     z_dim = [args.hidden_size] * num_networks

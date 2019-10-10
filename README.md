@@ -122,5 +122,5 @@ The comparison of the model's performance with the SOTA method.
 </p>
 
 <p align="center">
-  <img width="800" src="results/attn_matrix.png">
+  <img height="200" src="results/attn_matrix.png">
 </p>

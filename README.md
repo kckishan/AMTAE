@@ -116,11 +116,14 @@ The comparison of the model's performance with the SOTA method.
 |  DeepNF | 312 millions |
 | TiedDeepNF | 82 millions |
 
+Our model shows similar performance with 230 millions less parameters.
 
 <p align="center">
   <img width="800" src="plots/comaprison.jpg">
 </p>
 
+The attention map that indicates the weights given to different networks during feature learning.
+
 <p align="center">
-  <img height="200" src="results/attn_matrix.png">
+  <img height="500" src="results/attn_matrix.png">
 </p>

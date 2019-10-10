@@ -17,7 +17,10 @@ class Attention(nn.Module):
 
     def forward(self, input):
         att = self.att_w(input.permute(0, 2, 1)).squeeze(1)
-        out = self.attention_layer(att, self.args.use_cuda).unsqueeze(2)
+        if self.args.attn_type == 'sparsemax':
+            out = self.attention_layer(att, self.args.use_cuda).unsqueeze(2)
+        else:
+            out = self.attention_layer(att).unsqueeze(2)
         return out
 
 

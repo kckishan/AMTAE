@@ -109,6 +109,8 @@ python main.py --use-cuda
 
 ### Results
 The comparison of the model's performance with the SOTA method.
+
+
 | **Model**| **# number of parameters** |
 | --- | --- |
 |  DeepNF | 312 millions |
@@ -116,7 +118,7 @@ The comparison of the model's performance with the SOTA method.
 
 
 <p align="center">
-  <img width="800" src="plots/comparison.jpg">
+  <img width="800" src="plots/comaprison.jpg">
 </p>
 
 <p align="center">

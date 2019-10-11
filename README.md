@@ -1,4 +1,4 @@
-Protein function prediction with Multimodal Tied Autoencoders
+Protein function prediction with Attentive Multimodal Tied Autoencoders.
 ============================================
 A PyTorch implementation of Multimodal Tied Autoencoder.
 
